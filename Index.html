@@ -54,6 +54,86 @@
             margin: 15px auto;
             border-radius: 5px;
         }
+
+        /* Estilos para el juego */
+        #juego-scout {
+            background: #f0f8ff;
+            border-left: 10px solid #4CAF50;
+        }
+
+        .juego-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .opciones-nudo {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .boton-nudo {
+            padding: 12px 20px;
+            background: #8B008B;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .boton-nudo:hover {
+            background: #6a006a;
+        }
+
+        #mensaje-resultado {
+            margin: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            min-height: 24px;
+        }
+
+        .acierto {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        #reiniciar-juego {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #reiniciar-juego:hover {
+            background: #3d8b40;
+        }
+
+        .puntuacion {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .emoji-scout {
+            font-size: 40px;
+            margin: 10px;
+        }
     </style>
 </head>
 
@@ -87,6 +167,34 @@
         <img src="imagenes/DSC_4369.jpg" alt="Actividades scouts">
     </section>
 
+    <!-- SECCIÓN DEL JUEGO NUEVO -->
+    <section id="juego-scout">
+        <h2>🎮 Juego Scout: Adivina el Nudo</h2>
+        <div class="juego-container">
+            <p class="emoji-scout">🪢</p>
+            <p><strong>¿Cuál es el nudo más utilizado en campamentos para unir dos cuerdas de igual grosor?</strong></p>
+            
+            <div class="opciones-nudo">
+                <button class="boton-nudo" onclick="verificarRespuesta('nudo-ballestrinque')">Nudo Ballestrinque</button>
+                <button class="boton-nudo" onclick="verificarRespuesta('nudo-lazo')">Nudo de Lazo</button>
+                <button class="boton-nudo" onclick="verificarRespuesta('nudo-plano')">Nudo Plano</button>
+                <button class="boton-nudo" onclick="verificarRespuesta('nudo-pescador')">Nudo de Pescador</button>
+            </div>
+            
+            <div id="mensaje-resultado"></div>
+            
+            <div class="puntuacion">
+                Puntuación: <span id="puntos">0</span> / 5 intentos
+            </div>
+            
+            <button id="reiniciar-juego" onclick="reiniciarJuego()">🔁 Jugar otra vez</button>
+            
+            <p style="margin-top: 20px; font-size: 14px; color: #666;">
+                💡 <em>Consejo: Los scouts usan este nudo para atar carpas, paquetes y amarrar objetos.</em>
+            </p>
+        </div>
+    </section>
+
     <section id="grupos-asturias">
         <h2>Grupos de scouts en Asturias</h2>
         <p>
@@ -103,6 +211,91 @@
     <footer>
         © 2026 - Web dedicada al Movimiento Scout
     </footer>
+
+    <script>
+        // Variables del juego
+        let puntuacion = 0;
+        let intentos = 0;
+        const respuestaCorrecta = 'nudo-plano'; // La respuesta correcta es "Nudo Plano"
+        const maxIntentos = 5;
+        let juegoActivo = true;
+
+        // Función para verificar la respuesta
+        function verificarRespuesta(respuestaUsuario) {
+            if (!juegoActivo) return;
+            
+            intentos++;
+            const mensajeDiv = document.getElementById('mensaje-resultado');
+            const puntosSpan = document.getElementById('puntos');
+            
+            if (respuestaUsuario === respuestaCorrecta) {
+                // Respuesta CORRECTA
+                puntuacion++;
+                mensajeDiv.textContent = '✅ ¡Correcto! El Nudo Plano es el más usado para unir dos cuerdas de igual grosor.';
+                mensajeDiv.className = 'acierto';
+                
+                // Efecto de celebración
+                document.querySelector('.emoji-scout').textContent = '🎉🏕️';
+                
+            } else {
+                // Respuesta INCORRECTA
+                let explicacion = '';
+                switch(respuestaUsuario) {
+                    case 'nudo-ballestrinque':
+                        explicacion = 'El Ballestrinque se usa para amarrar a postes o árboles.';
+                        break;
+                    case 'nudo-lazo':
+                        explicacion = 'El Nudo de Lazo crea un lazo que no se desliza.';
+                        break;
+                    case 'nudo-pescador':
+                        explicacion = 'El Nudo de Pescador es para unir líneas de pesca finas.';
+                        break;
+                }
+                mensajeDiv.textContent = `❌ Incorrecto. ${explicacion} La respuesta correcta es el Nudo Plano.`;
+                mensajeDiv.className = 'error';
+                
+                // Cambiar emoji
+                document.querySelector('.emoji-scout').textContent = '🤔🪢';
+            }
+            
+            // Actualizar puntuación
+            puntosSpan.textContent = puntuacion;
+            
+            // Deshabilitar botones después de 5 intentos
+            if (intentos >= maxIntentos) {
+                juegoActivo = false;
+                mensajeDiv.innerHTML += `<br><br>🎯 <strong>Juego terminado. Tu puntuación final: ${puntuacion}/${maxIntentos}</strong>`;
+                if (puntuacion === maxIntentos) {
+                    mensajeDiv.innerHTML += '<br>🏆 ¡Eres un experto scout!';
+                }
+            }
+        }
+
+        // Función para reiniciar el juego
+        function reiniciarJuego() {
+            puntuacion = 0;
+            intentos = 0;
+            juegoActivo = true;
+            
+            document.getElementById('puntos').textContent = '0';
+            document.getElementById('mensaje-resultado').textContent = '';
+            document.getElementById('mensaje-resultado').className = '';
+            document.querySelector('.emoji-scout').textContent = '🪢';
+        }
+
+        // Efecto hover en los botones
+        document.querySelectorAll('.boton-nudo').forEach(boton => {
+            boton.addEventListener('mouseover', function() {
+                if (juegoActivo) {
+                    this.style.transform = 'scale(1.05)';
+                }
+            });
+            
+            boton.addEventListener('mouseout', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
 
 </body>
 </html>
